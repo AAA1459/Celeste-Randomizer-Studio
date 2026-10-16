@@ -361,9 +361,9 @@ namespace CRandomizerStudio {
                     }
                 }
 
-                if (j == 0 || j == 2 || j == 3 || j == 4 || j == 6)
+                if (j == 0 || j == 4 || j == 2 || j == 3 || j == 6)
                     PathIsOkay[IsB][0] = pathIsOkay;
-                if (j == 0 || j == 1 || j == 5)
+                if (j == 0 || j == 4 || j == 1 || j == 5)
                     PathIsOkay[IsB][1] = pathIsOkay;
 
                 bool AbilityCheck(RandoConfigReq req, out Color color) {

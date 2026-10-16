@@ -388,6 +388,11 @@ namespace CRandomizerStudio {
 
             Settings = YamlHelper.LoadConfig<BaseSettings>(SettingFilePath) ?? new();
             SelectRoom.Text = Settings.prevRoom;
+            int idx = Instance.SelectRoom.Items.IndexOf(SelectRoom.Text ?? "");
+            if (idx > 0) {
+                Instance.SelectRoom.SelectedIndex = idx;
+            }
+
             selectedFilePath = Settings.selectedFilePath;
             SelectFile_Updated();
 

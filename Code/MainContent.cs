@@ -61,7 +61,7 @@ namespace CRandomizerStudio {
                 Instance.SelectRoom.Text = name;
             }
             string select = Instance.SelectRoom.Text;
-            int repeat = 0;
+                int repeat = 0;
             if (select.LastIndexOf(" #") > 0) {
                 if (int.TryParse(select.Substring(select.Remove(select.LastIndexOf(" #")).Length + 2), out int i)) {
                     repeat = i;
@@ -132,14 +132,21 @@ namespace CRandomizerStudio {
             if (string.IsNullOrEmpty(Instance.SelectHoldA.Text + Instance.SelectHoldB.Text)) {
                 Instance.SelectHoldA.Text = "the room have no holes.";
             }
+
+            int i = -1;
             if (!allHolesCache.ContainsKey(Instance.SelectHoldA.Text)) {
                 if (range.Count > 0 && range[0] is string text && text != Instance.SelectHoldB.Text) {
                     Instance.SelectHoldA.Text = text;
                 }
+            } else if ((i = Instance.SelectHoldA.Items.IndexOf(Instance.SelectHoldA.Text)) > 0) {
+                Instance.SelectHoldA.SelectedIndex = i;
             }
+
             if (!allHolesCache.ContainsKey(Instance.SelectHoldB.Text)) {
                 if (range.Count > 1 && range[1] is string text && text != Instance.SelectHoldA.Text)
                     Instance.SelectHoldB.Text = text;
+            } else if ((i = Instance.SelectHoldB.Items.IndexOf(Instance.SelectHoldB.Text)) > 0) {
+                Instance.SelectHoldB.SelectedIndex = i;
             }
             panel_WaitingRefresh = true;
         }
@@ -159,7 +166,7 @@ namespace CRandomizerStudio {
             if (Instance.fileBox == null) {
                 return;
             }
-            string area = Settings.areaMode;
+            AreaModes area = Settings.AreaMode;
             string select = Instance.SelectRoom.Text;
             int repeat = 0;
             if (select.LastIndexOf(" #") > 0) {
@@ -168,14 +175,15 @@ namespace CRandomizerStudio {
                 }
                 select = select.Remove(select.LastIndexOf(" #"));
             }
-            int j = Instance.fileBox.Text.IndexOf($"{Settings.areaMode}:");
-            ;
+            int j = Instance.fileBox.Text.IndexOf($"{area}:");
             if (j < 0) {
                 j = 0;
             }
+            int j_range = area == AreaModes.CSide ? -1 : Instance.fileBox.Text.IndexOf($"{(area == AreaModes.BSide ? "CSide:" : "BSide:")}:");
+
             while (j >= 0 && repeat >= 0) {
                 int k = Instance.fileBox.Text.IndexOf($"\n  - Room: \"{select}\"", j);
-                if (k < 0)
+                if (k < 0 || (j_range > 0 && j_range < k))
                     k = Instance.fileBox.Text.IndexOf($"\n  - Room: {select}", j);
 
                 if (k >= 0) {
@@ -190,7 +198,7 @@ namespace CRandomizerStudio {
                 if (selectAllAtRoom) {
                     f = Instance.fileBox.Text.IndexOf($"\n  - Room:", j);
                     // AAA
-                    if (j > 0 && Instance.fileBox.Text.Substring(f - 5, 5) == "Side:") {
+                    if (j > 0 && j_range > 0 && j_range == f - 6) {
                         f -= 6;
                     }
                 }
