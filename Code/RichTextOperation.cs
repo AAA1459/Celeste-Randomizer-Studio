@@ -181,8 +181,6 @@ namespace CRandomizerStudio {
 
             autoSuggestBox.Visible = false;
 
-            Instance.Message = $"{box.TextLength}";
-
             StartDraw(box);
             box.Focus();
         }

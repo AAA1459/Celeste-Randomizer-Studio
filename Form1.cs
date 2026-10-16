@@ -502,10 +502,16 @@ namespace CRandomizerStudio {
                 if (edge.ReqBoth is RandoConfigReq req)
                     ReqType(req, 1, 4);
                 else {
-                    if (edge.ReqIn is RandoConfigReq req1)
+                    if (edge.ReqIn is RandoConfigReq req1) {
                         ReqType(req1, !FB ? 0 : 2, 5);
-                    if (edge.ReqOut is RandoConfigReq req2)
-                        ReqType(req2, !FB ? 2 : 0, 6);
+                    } else {
+                        PathIsOkay[!FB ? 1 : 0][1] = false;
+                    }
+                    if (edge.ReqOut is RandoConfigReq req2) {
+                        ReqType(req2, FB ? 0 : 2, 6);
+                    } else {
+                        PathIsOkay[FB ? 1 : 0][1] = false;
+                    }
                 }
             }
             #endregion
