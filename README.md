@@ -7,4 +7,5 @@ About Celeste randomizer and configuration files: https://github.com/rhelmot/Cel
 this tool can：
 - list the route conditions and compare them with the player's abilities.
 - Automatically selects entire room text in file when select all in the room edit box, then you can replace them.
+  * Changes in the room edit box will not sync to the file. You need to do manually.
 - uhh discover more as you use it.
