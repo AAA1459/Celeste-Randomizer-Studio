@@ -23,7 +23,7 @@ namespace CRandomizerStudio {
 
         public static void Update() {
             if (panel_WaitingRefresh) {
-                Instance.panel1.Invalidate(); // 触发 Form 的 Paint 事件进行重绘
+                Instance.panel1.Invalidate(); // 麓楼路垄 Form 碌脛 Paint 脢脗录镁陆酶脨脨脰脴禄忙
                 panel_WaitingRefresh = false;
             }
             if (fileBox_WaitingScroll) {
@@ -179,7 +179,7 @@ namespace CRandomizerStudio {
             if (j < 0) {
                 j = 0;
             }
-            int j_range = area == AreaModes.CSide ? -1 : Instance.fileBox.Text.IndexOf($"{(area == AreaModes.BSide ? "CSide:" : "BSide:")}:");
+            int j_range = area == AreaModes.CSide ? -1 : Instance.fileBox.Text.IndexOf($"{(area == AreaModes.BSide ? "CSide" : "BSide")}:");
 
             while (j >= 0 && repeat >= 0) {
                 int k = Instance.fileBox.Text.IndexOf($"\n  - Room: \"{select}\"", j);
