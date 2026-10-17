@@ -138,8 +138,16 @@ namespace CRandomizerStudio {
     }
 
     public class RandoConfigHole {
+        [YamlMember(Alias = "Side")]
+        public ScreenDirection? _Side { get => _side; set => _side = Side = value; }
 
-        public ScreenDirection? Side { get; set; }
+        // _side for yaml deserialization. Side for other.
+        [YamlIgnore]
+        public ScreenDirection? _side;
+        [YamlIgnore]
+        public ScreenDirection? Side;
+
+
         public int Idx { get; set; }
 
         public int? LowBound { get; set; }
@@ -159,6 +167,8 @@ namespace CRandomizerStudio {
 
         [YamlIgnore]
         public string _InSubroom = "main";
+        [YamlIgnore]
+        public bool _InOfSide = false;
     }
 
     public class RandoConfigCollectable {

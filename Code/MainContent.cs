@@ -23,7 +23,7 @@ namespace CRandomizerStudio {
 
         public static void Update() {
             if (panel_WaitingRefresh) {
-                Instance.panel1.Invalidate(); // 麓楼路垄 Form 碌脛 Paint 脢脗录镁陆酶脨脨脰脴禄忙
+                Instance.panel1.Invalidate(); // 触发 Form 的 Paint 事件进行重绘
                 panel_WaitingRefresh = false;
             }
             if (fileBox_WaitingScroll) {
