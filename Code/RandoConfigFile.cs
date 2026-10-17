@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using YamlDotNet.Serialization;
+using System.Diagnostics;
 
 namespace CRandomizerStudio {
     public class RandoConfigFile {
@@ -126,10 +127,23 @@ namespace CRandomizerStudio {
 
 
         public List<RandoConfigRoom> Subrooms { get; set; }
-        public List<RandoConfigInternalEdge> InternalEdges { get; set; } = new List<RandoConfigInternalEdge>();
+
+        [YamlIgnore]
+        public List<RandoConfigInternalEdge> _InternalEdges = new List<RandoConfigInternalEdge>();
+        public List<RandoConfigInternalEdge> InternalEdges {
+            get => _InternalEdges; set {
+                if (_InternalEdges.Count > 0) {
+                    _CollectablesHint = true;
+                }
+                _InternalEdges = value;
+            }
+        }
 
         public List<RandoConfigEdit> Tweaks { get; set; }
         public float? Worth;
+
+        [YamlIgnore]
+        public bool _CollectablesHint;
     }
 
     public class RandoConfigRectangle {
@@ -148,12 +162,36 @@ namespace CRandomizerStudio {
         public ScreenDirection? Side;
 
 
-        public int Idx { get; set; }
+        public int? Idx { get; set; }
 
-        public int? LowBound { get; set; }
-        public int? HighBound { get; set; }
-        public string Bound { get; set; }
 
+        [YamlMember(Alias = "LowBound")]
+        public int? _LowBound { get => lowBound; set => LowBound = lowBound = value; }
+
+        [YamlIgnore]
+        public int? LowBound;
+        [YamlIgnore]
+        public int? lowBound;
+
+        [YamlMember(Alias = "HighBound")]
+        public int? _HighBound { get => highBound; set => HighBound = highBound = value; }
+
+        [YamlIgnore]
+        public int? HighBound;
+        [YamlIgnore]
+        public int? highBound;
+
+        public string Bound {
+            get => _Bound; set {
+                _Bound = value;
+                if (value.Split(new char[] { ',' }, 2, StringSplitOptions.None) is string[] array && array.Length == 2 && int.TryParse(array[0], out int lowBound) && int.TryParse(array[1], out int highBound)) {
+                    LowBound = lowBound;
+                    HighBound = highBound;
+                }
+            }
+        }
+        [YamlIgnore]
+        public string _Bound;
 
         public bool? HighOpen { get; set; }
 
@@ -167,8 +205,6 @@ namespace CRandomizerStudio {
 
         [YamlIgnore]
         public string _InSubroom = "main";
-        [YamlIgnore]
-        public bool _InOfSide = false;
     }
 
     public class RandoConfigCollectable {

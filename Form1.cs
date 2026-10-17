@@ -126,6 +126,7 @@ namespace CRandomizerStudio {
                 selectedFilePath = path;
                 selectedFile.Text = selectedFilePath;
                 fileBox.Text = System.IO.File.ReadAllText(selectedFilePath);
+                RichTextOperation.ClearUndo(fileBox);
                 randoConfigFile = YamlHelper.LoadConfig<RandoConfigFile>(selectedFilePath);
                 MainContent.RefreshRoom();
                 Settings.selectedFilePath = selectedFilePath;
@@ -133,6 +134,7 @@ namespace CRandomizerStudio {
             } else if (FilesTabs.SelectedTab == FreeTextBox) {
                 selectedFile.Text = Settings.FreeTextBoxPath = path;
                 _FreeTextBox.Text = System.IO.File.ReadAllText(Settings.FreeTextBoxPath);
+                RichTextOperation.ClearUndo(_FreeTextBox);
             }
             return true;
         }
@@ -157,9 +159,20 @@ namespace CRandomizerStudio {
         }
         // Save file
         private void Savefile_Click(object sender, EventArgs e) {
-            System.IO.File.WriteAllText(selectedFilePath, fileBox.Text);
-            System.IO.File.WriteAllText(Settings.FreeTextBoxPath, FreeTextBox.Text);
+
             Message = $"Saved file";
+
+            if (!File.Exists(selectedFilePath)) {
+                Message = $"the path `{selectedFilePath}` existn't";
+            } else {
+                File.WriteAllText(selectedFilePath, fileBox.Text);
+            }
+
+            if (!File.Exists(Settings.FreeTextBoxPath)) {
+                Message = $"the path `{Settings.FreeTextBoxPath}` existn't";
+            } else {
+                File.WriteAllText(Settings.FreeTextBoxPath, FreeTextBox.Text);
+            }
         }
 
         private void SelectRoom_TextChanged(object sender, EventArgs e) {
@@ -326,9 +339,9 @@ namespace CRandomizerStudio {
 
                 int IsB = i == 0 ? 0 : 1;
                 bool pathIsOkay = true;
-                if (j == 0 || j == 2 || j == 3)
+                if (j == 0 || j == 4 || j == 2 || j == 3 || j == 6)
                     pathIsOkay = PathIsOkay[IsB][0];
-                if (pathIsOkay && j == 0 || j == 1)
+                if (pathIsOkay && (j == 0 || j == 4 || j == 1 || j == 5))
                     pathIsOkay = PathIsOkay[IsB][1];
 
                 int level = 0;
@@ -348,6 +361,8 @@ namespace CRandomizerStudio {
 
                         textpos[i].Add(($"{Level(level2)}Or:", Color.Black));
                         foreach (var req2 in reqs) {
+                            if (req2 == null)
+                                continue;
                             if (AbilityCheck(req2, out color)) {
                                 OrFine = true;
                             }
@@ -367,7 +382,7 @@ namespace CRandomizerStudio {
                     PathIsOkay[IsB][1] = pathIsOkay;
 
                 bool AbilityCheck(RandoConfigReq req, out Color color) {
-                    if (reqP == null) {
+                    if (req == null || reqP == null) {
                         color = Color.Black;
                         return true;
                     }
@@ -409,6 +424,9 @@ namespace CRandomizerStudio {
                 }
                 void RequireOutput(int level, RandoConfigReq req) {
                     bool listStart = level > 1;
+                    if (req == null) {
+                        return;
+                    }
                     if (req.Dashes != null)
                         textpos[i].Add(($"{Level(level, ref listStart)}Dashes: {req.Dashes}", color));
                     if (req.Difficulty != null)
@@ -503,7 +521,7 @@ namespace CRandomizerStudio {
                     ReqType(req, 1, 4);
                 else {
                     if (edge.ReqIn is RandoConfigReq req1) {
-                        ReqType(req1, !FB ? 0 : 2, 5);
+                        ReqType(req1, FB ? 0 : 2, 5);
                     } else {
                         PathIsOkay[!FB ? 1 : 0][1] = false;
                     }

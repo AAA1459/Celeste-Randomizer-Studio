@@ -36,13 +36,10 @@ namespace CRandomizerStudio {
 
         public static bool panel_WaitingRefresh;
 
-
-
-
-
-
+        public static bool refreshingRoom = false;
         public static void RefreshRoom(bool bySelectRoom = false, bool bySelectSide = false) {
             if (Instance.randoConfigFile is null) { Instance.NewRoomBox.Text = "Invalid file!"; return; }
+            refreshingRoom = true;
 
             List<RandoConfigRoom> rooms;
             switch (Settings.AreaMode) {
@@ -77,6 +74,9 @@ namespace CRandomizerStudio {
                     i = perName == side.Room ? i + 1 : 0;
                     Instance.SelectRoom.Items.Add((perName = side.Room) + (i > 0 ? $" #{i}" : null));
                 });
+                int index = Instance.SelectRoom.Items.IndexOf(Instance.SelectRoom.Text);
+                if (index > 0)
+                    Instance.SelectRoom.SelectedIndex = index;
             }
 
             rooms = rooms?.FindAll(side => side.Room == select) ?? new();
@@ -87,6 +87,7 @@ namespace CRandomizerStudio {
                 Instance.Message = $"Refresh room: '{rooms[repeat].Room}'";
             } else { Instance.NewRoomBox.Text = "Can't find room!"; }
             ReloadHolesRange();
+            refreshingRoom = false;
         }
 
         public static RandoConfigRoom currentRoom;
@@ -106,7 +107,8 @@ namespace CRandomizerStudio {
 
             currentRoom?.GetHoles?.ForEach(h => {
                 if (!Instance.FilterNoneHole.Checked || h.Kind != HoleKind.none) {
-                    string hkey = $"{h._InSubroom}::{h.Side}:{h.Idx}";
+
+                    string hkey = h.New != true ? $"{h._InSubroom}::{h.Side}:{h.Idx}" : $"{h._InSubroom}::{h.Side}:New_{h.LowBound},{h.HighBound}";
                     allHolesCache[hkey] = h;
                     range.Add(hkey);
                 }
@@ -147,6 +149,10 @@ namespace CRandomizerStudio {
                     Instance.SelectHoldB.Text = text;
             } else if ((i = Instance.SelectHoldB.Items.IndexOf(Instance.SelectHoldB.Text)) > 0) {
                 Instance.SelectHoldB.SelectedIndex = i;
+            }
+
+            if (currentRoom._CollectablesHint) {
+                Instance.Message = "Please move the 'Collectables' with 'Req' below 'InternalEdges'; otherwise it will not be recognized.";
             }
             panel_WaitingRefresh = true;
         }

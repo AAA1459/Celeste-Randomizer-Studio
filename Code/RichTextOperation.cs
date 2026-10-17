@@ -100,13 +100,17 @@ namespace CRandomizerStudio {
                     int pos = GetScrollPosition(box);
                     box.Text = prevText;
                     SetScrollPosition(box, pos);
-                    box.SelectionStart = selectionStart - textLength + prevText.Length;
+
+                    int newStart = selectionStart - textLength + prevText.Length;
+                    if (newStart > 0)
+                        box.SelectionStart = newStart;
 
                     if (undoList[box.Name].Count == 0)
                         undoList[box.Name].Push(prevText);
 
                     StartDraw(box);
                 }
+                e.SuppressKeyPress = false;
             }
         }
         private static void RichTextBox_GotFocus(object sender, EventArgs e) {
@@ -120,6 +124,11 @@ namespace CRandomizerStudio {
             if (undoList[box.Name].Count < 1)
                 undoList[box.Name].Push(box.Text);
         }
+        public static void ClearUndo(object sender) {
+            (sender as TextBoxBase)?.ClearUndo();
+            if (sender is RichTextBox box)
+                undoList[box.Name] = new Stack<string>();
+        }
         private static void RichTextBox_TextChanged(object sender, EventArgs e) {
             if (sender is not RichTextBox box)
                 return;
@@ -130,7 +139,7 @@ namespace CRandomizerStudio {
                 int selectionStart = Math.Min(box.SelectionStart, box.TextLength);
                 if (readyAddUndoList <= 0f && box.Text.Length > PrevTextLength[box.Name]) {
                     undoList[box.Name].Push(box.Text);
-                    readyAddUndoList += 0.8f;
+                    readyAddUndoList = 0.1f;
                 }
 
                 if (box.Text.Length > PrevTextLength[box.Name]) {
@@ -153,6 +162,7 @@ namespace CRandomizerStudio {
                 }
                 PrevTextLength[box.Name] = box.Text.Length;
             } else {
+                ClearUndo(box);
                 undoList[box.Name].Clear();
             }
         }
